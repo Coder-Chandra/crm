@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE_URL ="https://relevel-crm--backend.herokuapp.cpm"
+const BASE_URL ="https://relevel-crm--backend.herokuapp.com"
 
 
 export async function userSignup(data){
