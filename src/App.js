@@ -7,7 +7,10 @@ import Engineer from "./pages/Engineer";
 import NotFound from "./pages/NotFound";
 import Unauth from "./pages/Unauthorized";
 import RequireAuth from "./components/RequirAuth";
+import '@coreui/coreui/dist/css/coreui.min.css';
+import 'react-circular-progressbar/dist/styles.css';
 
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './App.css';
@@ -24,9 +27,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         {/* Protected routes by require auth starts */}
-        <Route element={<RequireAuth allowedRoles={[ROLES.ADMIN]} />}>
+        {/* <Route element={<RequireAuth allowedRoles={[ROLES.ADMIN]} />}> */}
           <Route path="/admin" element={<Admin />} />
-        </Route>
+        {/* </Route> */}
         <Route element={<RequireAuth allowedRoles={[ROLES.ENGINEER]} />}>
           <Route path="/engineer" element={<Engineer />} />
         </Route>

@@ -1,4 +1,5 @@
 import React from "react";
+import Sidebar from "../components/Sidebar";
 import MaterialTable, { Column } from "@material-table/core";
 
 const lookup = { true: "Available", false: "Unavailable" };
@@ -20,6 +21,7 @@ const data = [
 function Admin (){
     return(
         <div className="bg-light m-5 p-5 vh-100">
+        <Sidebar />
             <MaterialTable title="Demo Title" columns={columns} data={data} />
         </div>
     )
