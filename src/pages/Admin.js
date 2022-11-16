@@ -1,7 +1,10 @@
+import { useEffect } from "react";
 import React from "react";
 import Sidebar from "../components/Sidebar";
+import { fetchTicket } from "../api/tickets";
 import MaterialTable, { column } from "@material-table/core";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { ExportCsv, ExportPdf } from "@material-table/exporters";
 
 const lookup = { true: "Available", false: "Unavailable" };
 
@@ -12,7 +15,13 @@ const columns = [
   { title: "REPORTER", field: "reporter" },
   { title: "ASSIGNEE", field: "assignee" },
   { title: "PRIORITY", field: "priority" },
-  { title: "STATUS", field: "status" },
+  { title: "STATUS", field: "status", 
+lookup : {
+  "OPEN" : "OPEN",
+  "IN_PROGRESS" : "IN_PROGRESS",
+  "CLOSED" : "CLOSED",
+  "BLOCKED" : "BLOCKED"}
+ }
  ];
 
  const userColumns = [
@@ -36,11 +45,12 @@ const data = [
 // export const App = () => <MaterialTable columns={columns} data={data} />;
 
 function Admin() {
+  
   return (
     <div className="bg-light m-5 p-5 vh-100">
       <Sidebar />
       <div className="container p-5">
-        <h3 className="text-center text-danger">Welcome Admin !</h3>
+        <h3 className="text-center text-danger">Welcome {localStorage.getItem("name")} !</h3>
         <p className="text-muted text-center">
           Take a quick look at your admin stats below
         </p>
@@ -155,6 +165,21 @@ function Admin() {
       <MaterialTable 
       title="Ticket Details"
       columns={columns}
+      options = {{filtering : true,
+        exportMenu : [{
+            label : "Export Pdf",
+            exportFunc : ( cols, data) => ExportPdf(cols, data, "userRecords")
+          },
+          {
+            label : "Export Csv",
+            exportFunc : ( cols, data) => ExportCsv(cols, data, "userRecords")
+          }],
+      headerStyle : {
+        backgroundColor : "#d9534f",
+        color : "#fff"},
+        rowStyle : {
+          backgroundColor : "eee"}
+      }}
       //  data={data}
         />
       </div>
@@ -163,6 +188,13 @@ function Admin() {
       <MaterialTable 
       title="User Details"
       columns={userColumns}
+      options = {{filtering : true,
+      headerStyle : {
+        backgroundColor : "#d9534f",
+        color : "#fff"},
+        rowStyle : {
+          backgroundColor : "eee"}
+      }}
       //  data={data} 
       />
       </div>
