@@ -1,9 +1,9 @@
-import { useEffect, useState, React } from "react";
-import Sidebar from "../components/Sidebar";
-import { fetchTicket, ticketUpdation } from "../api/tickets";
-import MaterialTable, { column } from "@material-table/core";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import { ExportCsv, ExportPdf } from "@material-table/exporters";
+// import { useEffect, useState, React } from "react";
+// import Sidebar from "../components/Sidebar";
+// import { fetchTicket, ticketUpdation } from "../api/tickets";
+// import MaterialTable, { column } from "@material-table/core";
+// import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+// import { ExportCsv, ExportPdf } from "@material-table/exporters";
 
 const lookup = { true: "Available", false: "Unavailable" };
 
