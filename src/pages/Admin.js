@@ -1,9 +1,10 @@
-// import { useEffect, useState, React } from "react";
-// import Sidebar from "../components/Sidebar";
-// import { fetchTicket, ticketUpdation } from "../api/tickets";
-// import MaterialTable, { column } from "@material-table/core";
-// import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-// import { ExportCsv, ExportPdf } from "@material-table/exporters";
+import { useEffect, useState, React } from "react";
+import Sidebar from "../components/Sidebar";
+import { fetchTicket, ticketUpdation } from "../api/tickets";
+import {Modal, Button, ModalFooter} from 'react-bootstrap';
+import MaterialTable, { column } from "@material-table/core";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { ExportCsv, ExportPdf } from "@material-table/exporters";
 
 const lookup = { true: "Available", false: "Unavailable" };
 
@@ -46,6 +47,11 @@ const data = [
 function Admin() {
   const [ticketDetails, setTicketDetails] = useState([]);
   const [ticketStatusCount, setTicketStatusCount] = useState({});
+  const [ticketUpdationModal, setTicketUpdationModal] = useState(false);
+  const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
+  const openTicketUpdationModal = () => setTicketUpdationModal(true);
+  const closeTicketUpdationModal = () => setTicketUpdationModal(false);
+
   useEffect(() => {
     fetchTickets()
   }, []);
@@ -85,6 +91,23 @@ function Admin() {
     })
     setTicketStatusCount(Object.assign({},data))
   }
+  const editTicket = (ticketDetail) =>{
+    const ticket ={
+      assiginee : ticketDetail.assiginee,
+      description : ticketDetail.description,
+      title : ticketDetail.title,
+      id : ticketDetail.id,
+      reporter : ticketDetail.reporter,
+      status : ticketDetail.status,
+      ticketPriority : ticketDetail.ticketPriority
+    }
+    setTicketUpdationModal(true)
+    setSelectedCurrTicket(ticket)
+  }
+
+  const onTicketUpdate = () => {
+    
+  }
   return (
     <div className="bg-light m-5 p-5 vh-100">
       <Sidebar />
@@ -109,11 +132,11 @@ function Admin() {
             </h5>
             <hr />
             <div className="row mb-2">
-              <div className="col text-white mx-4 fw-bolder display-6">8</div>
+              <div className="col text-white mx-4 fw-bolder display-6">{ticketStatusCount.open}</div>
               <div className="cd">
                 <div style={{ width: 40, height: 40 }}>
                   <CircularProgressbar
-                    value={8}
+                    value={ticketStatusCount.open}
                     style={buildStyles({ pathColor: "darkblue" })}
                   />
                 </div>
@@ -135,11 +158,11 @@ function Admin() {
             </h5>
             <hr />
             <div className="row mb-2">
-              <div className="col text-white mx-4 fw-bolder display-6">20</div>
+              <div className="col text-white mx-4 fw-bolder display-6">{ticketStatusCount.progress}</div>
               <div className="cd">
                 <div style={{ width: 40, height: 40 }}>
                   <CircularProgressbar
-                    value={20}
+                    value={ticketStatusCount.progress}
                     style={buildStyles({ pathColor: "darkgolden" })}
                   />
                 </div>
@@ -161,11 +184,11 @@ function Admin() {
             </h5>
             <hr />
             <div className="row mb-2">
-              <div className="col text-white mx-4 fw-bolder display-6">75</div>
+              <div className="col text-white mx-4 fw-bolder display-6">{ticketStatusCount.closed}</div>
               <div className="cd">
                 <div style={{ width: 40, height: 40 }}>
                   <CircularProgressbar
-                    value={75}
+                    value={ticketStatusCount.closed}
                     style={buildStyles({ pathColor: "darkgreen" })}
                   />
                 </div>
@@ -187,11 +210,11 @@ function Admin() {
             </h5>
             <hr />
             <div className="row mb-2">
-              <div className="col text-white mx-4 fw-bolder display-6">36</div>
+              <div className="col text-white mx-4 fw-bolder display-6">{ticketStatusCount.blocked}</div>
               <div className="cd">
                 <div style={{ width: 40, height: 40 }}>
                   <CircularProgressbar
-                    value={36}
+                    value={ticketStatusCount.blocked}
                     style={buildStyles({ pathColor: "darkgray" })}
                   />
                 </div>
@@ -231,8 +254,59 @@ function Admin() {
             ],
           }}
         />
+        {ticketUpdationModal ? (
+          <Modal
+          show = {ticketUpdationModal}
+          onHide = {closeTicketUpdationModal}
+          backdrop = "static"
+          centered>
+            <Modal.Header closeButton>
+              <Modal.Title>Update Ticket</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <form>
+                <div className="p-1">
+                  <h5 className="card-subtitle mb-2 text-danger">User Id : {selectedCurrTicket.id}</h5>
+                </div>
+                <div className="input-group mb-2">
+                  <label className="lable input-group-text label-md">Title</label>
+                  <input type="text" disabled value=  {selectedCurrTicket.title} className="form-control" />
+                </div>
+                <div className="input-group mb-2">
+                  <label className="lable input-group-text label-md">Reporter</label>
+                  <input type="text" disabled value=  {selectedCurrTicket.reporter} className="form-control" />
+                </div>
+                <div className="input-group mb-2">
+                  <label className="lable input-group-text label-md" onChange={onTicketUpdate}>Assiginee</label>
+                  <select name= {selectedCurrTicket.assiginee} className="form-control">
+                    <option> {selectedCurrTicket.assiginee}</option>
+                  </select>
+                </div>
+                <div className="input-group mb-2">
+                  <label className="lable input-group-text label-md">Priority</label>
+                  <input type="number" value= {selectedCurrTicket.ticketPriority} className="form-control" name="tecketPriority" onChange={onTicketUpdate} />
+                  <select className="form-select" onChange={onTicketUpdate} name= {selectedCurrTicket.status}>
+                    <option value="OPEN" >OPEN</option>
+                    <option value="IN_PROGRESS" >IN_PROGRESS</option>
+                    <option value="CLOSED" >CLOSED</option>
+                    <option value="BLOCKED" >BLOCKED</option>
+                  </select>
+                </div>
+                <div className="input-group mb-2">
+                  <label className="lable input-group-text label-md">Description</label>
+                  <textarea type="text" value= "Description" className="md-textarea form-control" rows="3" name = "description" onChange={onTicketUpdate} />
+                </div>
+                <div className="d-flex justify-content-end">
+                  <Button variant="secondary" className="m-1" onClick={() => closeTicketUpdationModal}>Cancel</Button>
+                  <Button variant="danger" className="m-1" type="submit">Update</Button>
+                </div>
+              </form>
+            </Modal.Body>
+          </Modal>
+        ) : null}
         <hr />
       <MaterialTable 
+      onRowClick={(event, rowdata) => editTicket(rowdata)}
       title="User Details"
       columns={userColumns}
       options = {{filtering : true,
