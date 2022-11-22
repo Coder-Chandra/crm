@@ -1,10 +1,13 @@
-import { useEffect, useState, React } from "react";
-import Sidebar from "../components/Sidebar";
-import { fetchTicket, ticketUpdation } from "../api/tickets";
-import {Modal, Button, ModalFooter} from 'react-bootstrap';
-import MaterialTable, { column } from "@material-table/core";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { useEffect, useState } from "react";
+import MaterialTable from "@material-table/core";
 import { ExportCsv, ExportPdf } from "@material-table/exporters";
+import { Modal, Button } from "react-bootstrap";
+
+// import Widget from "../components/Widget";
+import Sidebar from "../components/Sidebar";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { fetchTicket, ticketUpdation } from "../api/tickets";
+// import { getAllUser, updateUserData } from "../api/user.js";
 
 const lookup = { true: "Available", false: "Unavailable" };
 
@@ -51,6 +54,10 @@ function Admin() {
   const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
   const openTicketUpdationModal = () => setTicketUpdationModal(true);
   const closeTicketUpdationModal = () => setTicketUpdationModal(false);
+
+  const updateSelectedCurrTicket = (data) => {
+    setSelectedCurrTicket(data)
+  }
 
   useEffect(() => {
     fetchTickets()
@@ -101,12 +108,32 @@ function Admin() {
       status : ticketDetail.status,
       ticketPriority : ticketDetail.ticketPriority
     }
+    console.log ("selected ticket", ticketDetail)
     setTicketUpdationModal(true)
     setSelectedCurrTicket(ticket)
   }
 
-  const onTicketUpdate = () => {
-    
+  const onTicketUpdate = (e) => {
+    if(e.target.name === "ticketPriority")
+    selectedCurrTicket.ticketPriority = e.target.value
+    else if(e.target.name === "status")
+    selectedCurrTicket.status = e.target.value
+    else if(e.target.name === "description")
+    selectedCurrTicket.description = e.target.value
+    updateSelectedCurrTicket (Object.assign({},selectedCurrTicket))
+    console.log(selectedCurrTicket)
+  }
+
+  const updateTicket =(e) => {
+    e.preventDefault();
+    ticketUpdation(selectedCurrTicket.id, selectedCurrTicket)
+    .then(function (response){
+      console.log(response)
+      setTicketUpdationModal(false)
+      fetchTickets()
+    }).catch (function (error){
+      console.log(error)
+    })
   }
   return (
     <div className="bg-light m-5 p-5 vh-100">
@@ -225,6 +252,7 @@ function Admin() {
       </div> 
       <div className="container" >
       <MaterialTable
+      onRowClick={(event, rowdata) => editTicket(rowdata)}
           // 1. grabbing the specific ticket from the row
           // onRowClick={(event, rowData) => editTicket(rowData)}
           title="TICKET"
@@ -264,9 +292,9 @@ function Admin() {
               <Modal.Title>Update Ticket</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <form>
+              <form onSubmit={updateTicket}>
                 <div className="p-1">
-                  <h5 className="card-subtitle mb-2 text-danger">User Id : {selectedCurrTicket.id}</h5>
+                  <h5 className="card-subtitle mb-2 text-danger">User Id : {selectedCurrTicket.id} </h5>
                 </div>
                 <div className="input-group mb-2">
                   <label className="lable input-group-text label-md">Title</label>
@@ -306,7 +334,6 @@ function Admin() {
         ) : null}
         <hr />
       <MaterialTable 
-      onRowClick={(event, rowdata) => editTicket(rowdata)}
       title="User Details"
       columns={userColumns}
       options = {{filtering : true,
